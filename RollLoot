@@ -1,0 +1,11 @@
+\\Roll Loot
+
+if (!canvas.tokens.controlled.length) return;
+for (const selected_token of canvas.tokens.controlled) {
+  await game.itempiles.API.rollItemTable("ENTER TABLE NAME HERE", {
+    timesToRoll: "1d4",
+    targetActor: selected_token.actor,
+    removeExistingActorItems: true
+  });
+}
+await game.itempiles.API.turnTokensIntoItemPiles(canvas.tokens.controlled);
