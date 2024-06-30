@@ -1,0 +1,4 @@
+\\Convert to Loot
+
+const converttoken = canvas.tokens.controlled[0];
+await ItemPiles.API.turnTokensIntoItemPiles(converttoken);
