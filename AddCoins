@@ -1,0 +1,142 @@
+async function addCurrency($html) {
+    const currencies = {
+        platinum: {
+            content: $html.find('[name="platinum"]')[0].value,
+            icon: "icons/commodities/currency/coins-plain-stack-gold-yellow.webp",
+        },
+        gold: {
+            content: $html.find('[name="gold"]')[0].value,
+            icon: "icons/commodities/currency/coins-plain-stack-gold-yellow.webp",
+        },
+        electrum: {
+            content: $html.find('[name="electrum"]')[0].value,
+            icon: "icons/commodities/currency/coin-engraved-oval-steel.webp",
+
+        },
+        silver: {
+            content: $html.find('[name="silver"]')[0].value,
+            icon: "icons/commodities/currency/coins-plain-stack-silver.webp",
+        },
+        copper: {
+            content: $html.find('[name="copper"]')[0].value,
+            icon: "icons/commodities/currency/coin-oval-rune-copper.webp",
+        }
+    };
+
+    function flavorCurrency() {
+        let currentIcon = currencies['platinum']['icon'];
+        return `
+        <div><strong style='color: #20854a;'>${rollPlatinum.total}</strong> Platinum ! </div>
+        <img src=${currentIcon} height="50" style="border:0px">
+        `;
+    }
+    var rollPlatinum = await new Roll(currencies.platinum.content).evaluate({ async: true });
+    const flavorPlatinum = flavorCurrency();
+    await rollPlatinum.toMessage({ rollMode: "privateroll", flavorPlatinum });
+
+    if (!currencies.platinum.content) {
+        var rollPlatinum = await new Roll(currencies.platinum.content).evaluate({ async: true });
+        const flavorPlatinum = await flavorCurrency("platinum", rollPlatinum);
+        console.log(flavorPlatinum);
+        await rollPlatinum.toMessage({ rollMode: "privateroll", flavorPlatinum });
+        const totalPlatinum = rollPlatinum.total;
+    }
+    if (currencies.gold.content) {
+        var rollGold = new Roll(currencies.gold.content).evaluate({ async: false });
+        const flavorGold = flavorCurrency("gold", rollGold);
+        await rollGold.toMessage({ rollMode: "privateroll", flavorGold });
+        const totalGold = rollGold.roll.total;
+    }
+    if (currencies.electrum.content) {
+        var rollElectrum = new Roll(currencies.electrum.content).evaluate({ async: false });
+        const flavorElectrum = flavorCurrency("electrum", rollElectrum);
+        await rollElectrum.toMessage({ rollMode: "privateroll", flavorElectrum });
+        const totalElectrum = rollElectrum.roll.total;
+    }
+    if (currencies.silver.content) {
+        var rollSilver = new Roll(currencies.silver.content).evaluate({ async: false });
+        const flavorSilver = flavorCurrency("silver", rollSilver);
+        await rollSilver.toMessage({ rollMode: "privateroll", flavorSilver });
+        const totalSilver = rollSilver.roll.total;
+    }
+    if (currencies.copper.content) {
+        var rollCopper = new Roll(currencies.copper.content).evaluate({ async: false });
+        const flavorCopper = flavorCurrency("copper", rollCopper);
+        await rollCopper.toMessage({ rollMode: "privateroll", flavorCopper });
+        const totalCopper = rollCopper.roll.total;
+    }
+  
+    const target = canvas.tokens.controlled[0].actor;
+    await ItemPiles.API.addAttributes(target, {
+        'data.currency.pp': rollPlatinum?.total || '',
+        'data.currency.gp': rollGold?.total || '',
+        'data.currency.ep': rollElectrum?.total || '',
+        'data.currency.sp': rollSilver?.total || '',
+        'data.currency.cp': rollCopper?.total || ''
+    });
+}
+// style="display: flex;"
+const dialog = new Dialog({
+    title: 'Add coins to ItemPile',
+    content: `
+        <p>How many of each currency do you want to add to the selected Token ?</p>
+        <form>
+        <div class="form-group">
+        <label>Platinum :</label>
+        <input type="text" id="platinum" name="platinum" width="10" ></textarea>
+        </div>
+          <div>
+
+    <hr>
+  </div>
+
+        <div class="form-group">
+        <label>Gold :</label>
+        <input type="text" id="gold" name="gold" width="10" ></textarea>
+        </div>
+          <div>
+
+    <hr>
+  </div>
+
+        <div class="form-group">
+        <label>Electrum :</label>
+        <input type="text" id="electrum" name="electrum" width="10"></textarea>
+        </div>
+          <div>
+
+    <hr>
+  </div>
+
+        <div class="form-group">
+        <label>Silver :</label>
+        <input type="text" id="silver" name="silver" width="10" ></textarea>
+        </div>
+          <div>
+
+    <hr>
+  </div>
+
+        <div class="form-group">
+        <label>Copper :</label>
+        <input type="text" id="copper" name="copper" width="10" ></textarea>
+        </div>
+          <div>
+
+    <hr>
+  </div>
+        </form>
+        `,
+    buttons: {
+        no: {
+            label: 'Cancel',
+        },
+        yes: {
+            label: 'OK',
+            callback: addCurrency,
+        },
+    },
+    default: 'yes',
+});
+
+dialog.render(true);
